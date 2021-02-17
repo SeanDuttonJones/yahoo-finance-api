@@ -27,13 +27,14 @@ def summary(symbol, q: Optional[List[str]] = Query(None)):
     try:
         s = Scrape(symbol, elements_to_scrape)
         summary_data = s.summary()
-        if all (k in summary_data for k in q): # if all query parameters are keys in summary_data
-            summary_data = {key: summary_data[key] for key in q} # summary_data becomes requested key-value pairs
-        # else, return entire summary
+        if(q != None):
+            if all (k in summary_data for k in q): # if all query parameters are keys in summary_data
+                summary_data = {key: summary_data[key] for key in q} # summary_data keeps requested key-value pairs
+            # else, return whole summary_data
 
     except TooManyRedirects:
         raise HTTPException(status_code=404, detail="{symbol} doesn't exist or cannot be found.")
     except HTTPError:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500, detail="An error has occurred while processing the request.")
 
     return summary_data
